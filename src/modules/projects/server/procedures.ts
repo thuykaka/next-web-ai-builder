@@ -1,16 +1,17 @@
 import { z } from 'zod';
 import { inngest } from '@/inngest/client';
+import { generateSlug } from 'random-word-slugs';
 import { createTRPCRouter, baseProcedure } from '@/trpc/init';
 import prisma from '@/lib/db';
 
-export const messagesRouter = createTRPCRouter({
+export const projectsRouter = createTRPCRouter({
   getMany: baseProcedure.query(async () => {
-    const messages = await prisma.message.findMany({
+    const projects = await prisma.project.findMany({
       orderBy: {
         updatedAt: 'asc'
       }
     });
-    return messages;
+    return projects;
   }),
   getOne: baseProcedure
     .input(
@@ -19,10 +20,10 @@ export const messagesRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      const message = await prisma.message.findUnique({
+      const project = await prisma.project.findUnique({
         where: { id: input.id }
       });
-      return message;
+      return project;
     }),
   create: baseProcedure
     .input(
@@ -30,17 +31,20 @@ export const messagesRouter = createTRPCRouter({
         content: z
           .string()
           .min(1, 'Content is required')
-          .max(10000, 'Content is too long'),
-        projectId: z.string().min(1, 'Project ID is required')
+          .max(10000, 'Content is too long')
       })
     )
     .mutation(async ({ input }) => {
-      const newMessage = await prisma.message.create({
+      const newProject = await prisma.project.create({
         data: {
-          projectId: input.projectId,
-          content: input.content,
-          role: 'USER',
-          type: 'RESULT'
+          name: generateSlug(2, { format: 'kebab' }),
+          messages: {
+            create: {
+              content: input.content,
+              role: 'USER',
+              type: 'RESULT'
+            }
+          }
         }
       });
 
@@ -48,10 +52,10 @@ export const messagesRouter = createTRPCRouter({
         name: 'code-agent/run',
         data: {
           text: input.content,
-          projectId: input.projectId
+          projectId: newProject.id
         }
       });
 
-      return newMessage;
+      return newProject;
     })
 });
