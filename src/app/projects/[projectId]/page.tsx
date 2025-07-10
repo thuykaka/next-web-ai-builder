@@ -12,6 +12,7 @@ type ProjectPageProps = {
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { projectId } = await params;
 
+  prefetch(trpcServer.messages.getMany.queryOptions({ projectId }));
   prefetch(trpcServer.projects.getOne.queryOptions({ id: projectId }));
 
   return (
