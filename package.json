@@ -12,7 +12,9 @@
     "format": "prettier --write . --list-different",
     "format:check": "prettier -c -w .",
     "prepare": "husky",
-    "db:push": "pnpm dlx prisma migrate dev"
+    "db:push": "pnpm dlx prisma migrate dev",
+    "db:reset": "pnpm dlx prisma migrate reset",
+    "inngest:dev": "pnpm dlx inngest-cli@latest dev"
   },
   "lint-staged": {
     "**/*.{js,jsx,tsx,ts,css,less,scss,sass}": [
