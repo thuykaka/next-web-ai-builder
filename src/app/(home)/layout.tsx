@@ -1,0 +1,12 @@
+type HomeLayoutProps = {
+  children: React.ReactNode;
+};
+
+export default function HomeLayout({ children }: HomeLayoutProps) {
+  return (
+    <main className='flex max-h-screen min-h-screen flex-col overflow-y-auto'>
+      <div className='bg-background absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#dadde2_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#393e4a_1px,transparent_1px)]' />
+      <div className='flex flex-1 flex-col px-4 pb-4'>{children}</div>
+    </main>
+  );
+}

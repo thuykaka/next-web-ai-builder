@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { ThemeProvider } from 'next-themes';
 import NextTopLoader from 'nextjs-toploader';
 import { TRPCReactProvider } from '@/trpc/client';
 import { fontVariables } from '@/lib/font';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from '@/components/theme-provider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -27,8 +27,13 @@ export default function RootLayout({
       >
         <NextTopLoader showSpinner={false} color='var(--primary)' />
         <TRPCReactProvider>
-          <ThemeProvider>
-            <Toaster richColors/>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster richColors />
             {children}
           </ThemeProvider>
         </TRPCReactProvider>

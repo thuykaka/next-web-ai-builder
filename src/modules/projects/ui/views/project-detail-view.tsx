@@ -24,7 +24,7 @@ export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
     <div className='h-screen'>
       <ResizablePanelGroup direction='horizontal'>
         <ResizablePanel
-          defaultSize={35}
+          defaultSize={30}
           minSize={20}
           className='flex min-h-0 flex-col'
         >
@@ -43,9 +43,9 @@ export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
             </ErrorBoundary>
           </Suspense>
         </ResizablePanel>
-        <ResizableHandle withHandle />
+        <ResizableHandle className='hover:bg-primary/10 transition-colors' />
         <ResizablePanel
-          defaultSize={65}
+          defaultSize={70}
           minSize={50}
           className='flex min-h-0 flex-col'
         >
