@@ -1,8 +1,11 @@
 'use client';
 
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { useTRPC } from '@/trpc/client';
+import { useState } from 'react';
+import { Suspense } from 'react';
+import { Fragment } from '@/generated/prisma';
+import { ErrorBoundary } from 'react-error-boundary';
 import { MessageContainer } from '@/modules/projects/ui/components/message-container';
+import ProjectHeader from '@/modules/projects/ui/components/project-header';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -14,11 +17,7 @@ type ProjectDetailViewProps = {
 };
 
 export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
-  const trpc = useTRPC();
-
-  const { data: project } = useSuspenseQuery(
-    trpc.projects.getOne.queryOptions({ id: projectId })
-  );
+  const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
 
   return (
     <div className='h-screen'>
@@ -28,7 +27,20 @@ export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
           minSize={20}
           className='flex min-h-0 flex-col'
         >
-          <MessageContainer projectId={projectId} />
+          <Suspense fallback={<div>Loading project...</div>}>
+            <ErrorBoundary fallback={<div>Error loading project...</div>}>
+              <ProjectHeader projectId={projectId} />
+            </ErrorBoundary>
+          </Suspense>
+          <Suspense fallback={<div>Loading messages...</div>}>
+            <ErrorBoundary fallback={<div>Error loading messages...</div>}>
+              <MessageContainer
+                projectId={projectId}
+                activeFragment={activeFragment}
+                setActiveFragment={setActiveFragment}
+              />
+            </ErrorBoundary>
+          </Suspense>
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel
