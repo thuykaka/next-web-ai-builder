@@ -12,7 +12,7 @@ type MessageContainerProps = {
   setActiveFragment: (fragment: Fragment) => void;
 };
 
-export function MessageContainer({
+export default function MessageContainer({
   projectId,
   activeFragment,
   setActiveFragment

@@ -28,7 +28,7 @@ export default function RootLayout({
         <NextTopLoader showSpinner={false} color='var(--primary)' />
         <TRPCReactProvider>
           <ThemeProvider>
-            <Toaster />
+            <Toaster richColors/>
             {children}
           </ThemeProvider>
         </TRPCReactProvider>

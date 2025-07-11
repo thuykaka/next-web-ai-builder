@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Suspense } from 'react';
 import { Fragment } from '@/generated/prisma';
 import { ErrorBoundary } from 'react-error-boundary';
-import { MessageContainer } from '@/modules/projects/ui/components/message-container';
+import FragmentPreview from '@/modules/projects/ui/components/fragment-preview';
+import MessageContainer from '@/modules/projects/ui/components/message-container';
 import ProjectHeader from '@/modules/projects/ui/components/project-header';
 import {
   ResizableHandle,
@@ -48,7 +49,7 @@ export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
           minSize={50}
           className='flex min-h-0 flex-col'
         >
-          TODO: Add preview panel
+          {!!activeFragment && <FragmentPreview fragment={activeFragment} />}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
