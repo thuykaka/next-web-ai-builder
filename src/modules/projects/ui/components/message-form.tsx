@@ -59,7 +59,6 @@ export default function MessageForm({ projectId }: MessageFormProps) {
     });
   };
 
-  const showUsage = false;
   const isButtonDisabled = !form.formState.isValid || isPending;
 
   return (
@@ -68,8 +67,7 @@ export default function MessageForm({ projectId }: MessageFormProps) {
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn(
           'bg-sidebar dark:bg-sidebar relative rounded-xl border p-4 pt-1 transition-all',
-          isFocused && 'shadow-xs',
-          showUsage && 'rounded-t-none'
+          isFocused && 'shadow-xs'
         )}
       >
         <FormField

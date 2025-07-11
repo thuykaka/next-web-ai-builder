@@ -119,4 +119,67 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Prevent focus zoom on mobile devices */
+  @media screen and (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  } 
+}
+
+@layer utilities {
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-track {
+    background-color: var(--sidebar);
+  }
+
+  .sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--sidebar-foreground);
+    border-radius: 4px;
+  }
+
+  /* Firefox scrollbar */
+  .sidebar-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sidebar-foreground) var(--sidebar);
+  }
+}
+
+@layer components {
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  html {
+    @apply overflow-x-hidden;
+  }
 }

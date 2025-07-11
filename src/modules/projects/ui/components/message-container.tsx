@@ -18,6 +18,8 @@ export default function MessageContainer({
   setActiveFragment
 }: MessageContainerProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const lastAssitantMessageIdRef = useRef<string | null>(null);
+
   const trpc = useTRPC();
 
   const { data: messages, isPending } = useSuspenseQuery(
@@ -31,11 +33,15 @@ export default function MessageContainer({
   );
 
   useEffect(() => {
-    const lastAssumedMessageWithFragment = messages.findLast(
-      (message) => message.role === 'ASSISTANT' && !!message.fragment
+    const lastAssitantMessage = messages.findLast(
+      (message) => message.role === 'ASSISTANT'
     );
-    if (lastAssumedMessageWithFragment) {
-      setActiveFragment(lastAssumedMessageWithFragment.fragment as any);
+    if (
+      lastAssitantMessage?.fragment &&
+      lastAssitantMessage?.id !== lastAssitantMessageIdRef.current
+    ) {
+      setActiveFragment(lastAssitantMessage.fragment as any);
+      lastAssitantMessageIdRef.current = lastAssitantMessage.id;
     }
   }, [messages, setActiveFragment]);
 

@@ -52,7 +52,7 @@ const AssistantMessage = ({
     >
       <div className='mb-2 flex items-center gap-2 pl-2'>
         <Image
-          src='/logo.png'
+          src='/logo.svg'
           alt='Vibe'
           width={18}
           height={18}
@@ -83,8 +83,7 @@ const FragmentCard = ({
   onFragmentClick
 }: FragmentCardProps) => {
   return (
-    <Button
-      variant='ghost'
+    <button
       className={cn(
         'bg-muted hover:bg-secondary flex w-fit items-start gap-2 rounded-lg border p-3 transition-colors',
         isActiveFragment &&
@@ -102,7 +101,7 @@ const FragmentCard = ({
       <div className='mt-0.5 flex items-center justify-center'>
         <ChevronRightIcon className='size-4' />
       </div>
-    </Button>
+    </button>
   );
 };
 

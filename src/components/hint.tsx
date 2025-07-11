@@ -3,7 +3,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
-} from '@radix-ui/react-tooltip';
+} from '@/components/ui/tooltip';
 
 type HintProps = {
   children: React.ReactNode;
@@ -23,7 +23,7 @@ export default function Hint({
       <Tooltip>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent side={side} align={align}>
-          {text}
+          <p>{text}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
