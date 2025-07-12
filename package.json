@@ -23,6 +23,8 @@
     ]
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.24.0",
+    "@clerk/themes": "^2.2.55",
     "@e2b/code-interpreter": "^1.5.1",
     "@hookform/resolvers": "^5.1.1",
     "@inngest/agent-kit": "^0.9.0",
@@ -82,6 +84,7 @@
     "require-in-the-middle": "^7.5.2",
     "server-only": "^0.0.1",
     "sonner": "^2.0.6",
+    "superjson": "^2.2.2",
     "tailwind-merge": "^3.3.1",
     "vaul": "^1.1.2",
     "zod": "^3.25.76"
