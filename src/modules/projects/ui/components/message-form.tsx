@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowUpIcon, Loader2Icon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import TextareaAutosize from 'react-textarea-autosize';
 import { toast } from 'sonner';
 import { useTRPC } from '@/trpc/client';
 import { cn } from '@/lib/utils';
+import Usage from '@/modules/projects/ui/components/usage';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 
@@ -23,6 +25,7 @@ const formSchema = z.object({
 });
 
 export default function MessageForm({ projectId }: MessageFormProps) {
+  const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -35,6 +38,10 @@ export default function MessageForm({ projectId }: MessageFormProps) {
     }
   });
 
+  const { data: usage, isPending: isLoadingUsage } = useQuery(
+    trpc.usages.status.queryOptions()
+  );
+
   const { mutateAsync: createMessage, isPending } = useMutation(
     trpc.messages.create.mutationOptions({
       onSuccess: () => {
@@ -45,9 +52,15 @@ export default function MessageForm({ projectId }: MessageFormProps) {
             projectId
           })
         );
+
+        queryClient.invalidateQueries(trpc.usages.status.queryOptions());
       },
       onError: (error) => {
         toast.error(error.message);
+
+        if (error.data?.code === 'TOO_MANY_REQUESTS') {
+          router.push('/pricing');
+        }
       }
     })
   );
@@ -60,14 +73,22 @@ export default function MessageForm({ projectId }: MessageFormProps) {
   };
 
   const isButtonDisabled = !form.formState.isValid || isPending;
+  const showUsage = !!usage;
 
   return (
     <Form {...form}>
+      {showUsage && (
+        <Usage
+          points={usage.remainingPoints}
+          msBeforeNext={usage.msBeforeNext}
+        />
+      )}
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn(
           'bg-sidebar dark:bg-sidebar relative rounded-xl border p-4 pt-1 transition-all',
-          isFocused && 'shadow-xs'
+          isFocused && 'shadow-xs',
+          showUsage && 'rounded-t-none'
         )}
       >
         <FormField
