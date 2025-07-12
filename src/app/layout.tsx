@@ -23,7 +23,13 @@ export default function RootLayout({
         className={cn('overflow-hidden overscroll-none font-sans antialiased')}
       >
         <NextTopLoader showSpinner={false} color='var(--primary)' />
-        <ClerkProvider>
+        <ClerkProvider
+          appearance={{
+            variables: {
+              colorPrimary: 'var(--primary)'
+            }
+          }}
+        >
           <TRPCReactProvider>
             <ThemeProvider
               attribute='class'
