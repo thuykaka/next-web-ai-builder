@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useClerk } from '@clerk/nextjs';
 import { ArrowUpIcon, Loader2Icon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -26,6 +27,7 @@ export default function ProjectForm() {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const clerk = useClerk();
 
   const [isFocused, setIsFocused] = useState(false);
 
@@ -45,6 +47,10 @@ export default function ProjectForm() {
       },
       onError: (error) => {
         toast.error(error.message);
+        
+        if (error.data?.code === 'UNAUTHORIZED') {
+          clerk.openSignIn();
+        }
       }
     })
   );

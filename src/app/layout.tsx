@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
+import { ClerkProvider } from '@clerk/nextjs';
 import NextTopLoader from 'nextjs-toploader';
 import { TRPCReactProvider } from '@/trpc/client';
-import { fontVariables } from '@/lib/font';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -20,23 +20,22 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body
-        className={cn(
-          'overflow-hidden overscroll-none font-sans antialiased',
-          fontVariables
-        )}
+        className={cn('overflow-hidden overscroll-none font-sans antialiased')}
       >
         <NextTopLoader showSpinner={false} color='var(--primary)' />
-        <TRPCReactProvider>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Toaster richColors />
-            {children}
-          </ThemeProvider>
-        </TRPCReactProvider>
+        <ClerkProvider>
+          <TRPCReactProvider>
+            <ThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Toaster richColors />
+              {children}
+            </ThemeProvider>
+          </TRPCReactProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
