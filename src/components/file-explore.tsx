@@ -116,7 +116,6 @@ export default function FileExplore({ files = {} }: FileExploreProps) {
 
   const handleFileSelect = useCallback(
     (filePath: string) => {
-      console.log({ filePath });
       if (files[filePath]) {
         setActiveFile(filePath);
       }

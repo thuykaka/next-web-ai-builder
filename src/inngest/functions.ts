@@ -1,20 +1,37 @@
 import { z } from 'zod';
+import { MessageRole } from '@/generated/prisma';
 import { Sandbox } from '@e2b/code-interpreter';
 import {
   createAgent,
   createNetwork,
   createTool,
   openai,
-  type Tool
+  type Tool,
+  type Message,
+  createState
 } from '@inngest/agent-kit';
 import prisma from '@/lib/db';
 import { getLastAssitantTextMessageContent, getSandbox } from '@/lib/sandbox';
-import { PROMPT } from '@/constants/prompt';
+import {
+  FRAGMENT_TITLE_PROMPT,
+  PROMPT,
+  RESPONSE_PROMPT
+} from '@/constants/prompt';
 import { inngest } from './client';
 
 type AgentState = {
   taskSummary: string;
   files: Record<string, string>;
+};
+
+const generatedAgentResponse = (output: Message[], defaultValue: string) => {
+  if (output[0].type !== 'text') {
+    return defaultValue;
+  }
+  if (Array.isArray(output[0].content)) {
+    return output[0].content.map((text) => text.text).join('');
+  }
+  return output[0].content;
 };
 
 export const codeAgentFunction = inngest.createFunction(
@@ -25,6 +42,39 @@ export const codeAgentFunction = inngest.createFunction(
       const sandbox = await Sandbox.create('next-web-ai-builder-3');
       return sandbox.sandboxId;
     });
+
+    const previousMessage = await step.run('get-previous-message', async () => {
+      const formattedMessages: Message[] = [];
+
+      const messages = await prisma.message.findMany({
+        where: {
+          projectId: event.data.projectId
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      });
+
+      for (const message of messages) {
+        formattedMessages.push({
+          type: 'text',
+          role: message.role === MessageRole.USER ? 'user' : 'assistant',
+          content: message.content
+        });
+      }
+
+      return formattedMessages;
+    });
+
+    const state = createState<AgentState>(
+      {
+        taskSummary: '',
+        files: {}
+      },
+      {
+        messages: previousMessage
+      }
+    );
 
     const codeAgent = createAgent<AgentState>({
       name: 'Code Agent',
@@ -149,6 +199,7 @@ export const codeAgentFunction = inngest.createFunction(
       name: 'code-agent-network',
       agents: [codeAgent],
       maxIter: 15,
+      defaultState: state,
       router: async ({ network }) => {
         const taskSummary = network.state.data.taskSummary;
         if (taskSummary) {
@@ -158,7 +209,33 @@ export const codeAgentFunction = inngest.createFunction(
       }
     });
 
-    const result = await network.run(event.data.text);
+    const result = await network.run(event.data.text, { state: state });
+
+    const fragmentTitleGenerator = createAgent({
+      name: 'Fragment Title Generator',
+      description: 'An expert title generator for code fragments',
+      system: FRAGMENT_TITLE_PROMPT,
+      model: openai({
+        model: 'gpt-4o-mini'
+      })
+    });
+
+    const responseGenerator = createAgent({
+      name: 'Response Generator',
+      description: 'An expert response generator for code fragments',
+      system: RESPONSE_PROMPT,
+      model: openai({
+        model: 'gpt-4o-mini'
+      })
+    });
+
+    const { output: fragmentTitleOutput } = await fragmentTitleGenerator.run(
+      result.state.data.taskSummary
+    );
+
+    const { output: responseOutput } = await responseGenerator.run(
+      result.state.data.taskSummary
+    );
 
     const isError =
       !result.state.data.taskSummary ||
@@ -185,13 +262,16 @@ export const codeAgentFunction = inngest.createFunction(
       return await prisma.message.create({
         data: {
           projectId: event.data.projectId,
-          content: event.data.text,
+          content: generatedAgentResponse(
+            responseOutput,
+            'Something went wrong. Please try again.'
+          ),
           role: 'ASSISTANT',
           type: 'RESULT',
           fragment: {
             create: {
               sandboxUrl,
-              title: 'Fragment',
+              title: generatedAgentResponse(fragmentTitleOutput, 'Fragment'),
               files: result.state.data.files
             }
           }
