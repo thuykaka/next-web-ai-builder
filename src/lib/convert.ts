@@ -1,4 +1,4 @@
-import { type TreeItem } from '@/types/index';
+import type { FileCollection, TreeItem } from '@/types/files';
 
 /**
  * Convert a record of files to a tree structure.
@@ -10,7 +10,7 @@ import { type TreeItem } from '@/types/index';
  * Output: [["src", "Button.tsx"], "README.md"]
  */
 export function convertFilesToTreeItems(
-  files: Record<string, string>
+  files: FileCollection
 ): TreeItem[] {
   // Define proper type for tree structure
   interface TreeNode {
