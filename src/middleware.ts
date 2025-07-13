@@ -4,7 +4,8 @@ const isPublicRoute = createRouteMatcher([
   '/',
   '/sign-in(.*)',
   '/sign-up(.*)',
-  '/api(.*)'
+  '/api/inngest(.*)', // Chỉ cho phép inngest webhook
+  '/api/trpc/(.*)', // tRPC có auth middleware riêng
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
