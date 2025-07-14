@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { MessageRole } from '@/generated/prisma';
 import {
   createAgent,
   createNetwork,
@@ -9,6 +8,7 @@ import {
   type Message as AgentKitMessage,
   createState
 } from '@inngest/agent-kit';
+import { MessageRole } from '@prisma/client';
 import prisma from '@/lib/db';
 import {
   getLastAssistantTextMessageContent,

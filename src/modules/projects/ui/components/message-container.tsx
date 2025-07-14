@@ -1,6 +1,6 @@
 import { useRef, useEffect, useMemo } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { Fragment, Message } from '@/generated/prisma';
+import { Fragment, Message } from '@prisma/client';
 import { useTRPC } from '@/trpc/client';
 import { useInngest } from '@/modules/projects/ui/components/inngest-provider';
 import MessageCard from '@/modules/projects/ui/components/message-card';
