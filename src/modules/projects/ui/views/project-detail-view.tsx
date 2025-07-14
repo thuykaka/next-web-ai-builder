@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/resizable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import FileExplore from '@/components/file-explore';
-import { InngestProvider } from '../components/inngest-provider';
 
 type ProjectDetailViewProps = {
   projectId: string;
@@ -36,22 +35,20 @@ export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
           minSize={20}
           className='flex min-h-0 flex-col'
         >
-          <InngestProvider projectId={projectId}>
-            <Suspense fallback={<div>Loading project...</div>}>
-              <ErrorBoundary fallback={<div>Error loading project...</div>}>
-                <ProjectHeader projectId={projectId} />
-              </ErrorBoundary>
-            </Suspense>
-            <Suspense fallback={<div>Loading messages...</div>}>
-              <ErrorBoundary fallback={<div>Error loading messages...</div>}>
-                <MessageContainer
-                  projectId={projectId}
-                  activeFragment={activeFragment}
-                  setActiveFragment={setActiveFragment}
-                />
-              </ErrorBoundary>
-            </Suspense>
-          </InngestProvider>
+          <Suspense fallback={<div>Loading project...</div>}>
+            <ErrorBoundary fallback={<div>Error loading project...</div>}>
+              <ProjectHeader projectId={projectId} />
+            </ErrorBoundary>
+          </Suspense>
+          <Suspense fallback={<div>Loading messages...</div>}>
+            <ErrorBoundary fallback={<div>Error loading messages...</div>}>
+              <MessageContainer
+                projectId={projectId}
+                activeFragment={activeFragment}
+                setActiveFragment={setActiveFragment}
+              />
+            </ErrorBoundary>
+          </Suspense>
         </ResizablePanel>
         <ResizableHandle className='hover:bg-primary/10 transition-colors' />
         <ResizablePanel

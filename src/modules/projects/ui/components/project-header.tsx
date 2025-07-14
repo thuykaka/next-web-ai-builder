@@ -33,7 +33,6 @@ type ProjectHeaderProps = {
 export default function ProjectHeader({ projectId }: ProjectHeaderProps) {
   const { setTheme, theme } = useTheme();
   const trpc = useTRPC();
-  const { state: realtimeConnectionState } = useInngest();
 
   const { data: project } = useSuspenseQuery(
     trpc.projects.getOne.queryOptions({ id: projectId })
@@ -91,21 +90,6 @@ export default function ProjectHeader({ projectId }: ProjectHeaderProps) {
           </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
-      <div className='px-3 pl-2'>
-        <InngestConnectionStatus
-          status={
-            realtimeConnectionState === InngestSubscriptionState.Connecting ||
-            realtimeConnectionState === InngestSubscriptionState.RefreshingToken
-              ? 'connecting'
-              : realtimeConnectionState === InngestSubscriptionState.Active
-                ? 'connected'
-                : 'disconnected'
-          }
-        >
-          <InngestConnectionStatusIndicator />
-          <InngestConnectionStatusLabel />
-        </InngestConnectionStatus>
-      </div>
     </header>
   );
 }
