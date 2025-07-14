@@ -1,4 +1,5 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { InngestSubscriptionState } from '@inngest/realtime/hooks';
 import { ChevronDownIcon, ChevronLeftIcon, SunMoonIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
@@ -18,19 +19,25 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem
 } from '@/components/ui/dropdown-menu';
+import {
+  InngestConnectionStatus,
+  InngestConnectionStatusLabel,
+  InngestConnectionStatusIndicator
+} from '@/components/inngest-connection-status';
+import { useInngest } from './inngest-provider';
 
 type ProjectHeaderProps = {
   projectId: string;
 };
 
 export default function ProjectHeader({ projectId }: ProjectHeaderProps) {
+  const { setTheme, theme } = useTheme();
   const trpc = useTRPC();
+  const { state: realtimeConnectionState } = useInngest();
 
   const { data: project } = useSuspenseQuery(
     trpc.projects.getOne.queryOptions({ id: projectId })
   );
-
-  const { setTheme, theme } = useTheme();
 
   const handleThemeChange = (value: string) => {
     setTheme(value);
@@ -84,6 +91,21 @@ export default function ProjectHeader({ projectId }: ProjectHeaderProps) {
           </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
+      <div className='px-3 pl-2'>
+        <InngestConnectionStatus
+          status={
+            realtimeConnectionState === InngestSubscriptionState.Connecting ||
+            realtimeConnectionState === InngestSubscriptionState.RefreshingToken
+              ? 'connecting'
+              : realtimeConnectionState === InngestSubscriptionState.Active
+                ? 'connected'
+                : 'disconnected'
+          }
+        >
+          <InngestConnectionStatusIndicator />
+          <InngestConnectionStatusLabel />
+        </InngestConnectionStatus>
+      </div>
     </header>
   );
 }
