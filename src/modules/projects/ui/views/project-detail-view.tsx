@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { Suspense } from 'react';
-import { Fragment, Message } from '@/generated/prisma';
 import type { FileCollection } from '@/types/files';
+import { Fragment, Message } from '@prisma/client';
 import { CodeIcon, CrownIcon, EyeIcon } from 'lucide-react';
 import Link from 'next/link';
 import { ErrorBoundary } from 'react-error-boundary';
