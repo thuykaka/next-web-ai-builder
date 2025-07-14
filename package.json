@@ -15,7 +15,8 @@
     "db:generate": "pnpm dlx prisma generate",
     "db:push": "pnpm dlx prisma migrate dev",
     "db:reset": "pnpm dlx prisma migrate reset",
-    "inngest:dev": "pnpm dlx inngest-cli@latest dev"
+    "inngest:dev": "pnpm dlx inngest-cli@latest dev",
+    "postinstall": "prisma generate"
   },
   "lint-staged": {
     "**/*.{js,jsx,tsx,ts,css,less,scss,sass}": [
