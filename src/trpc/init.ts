@@ -46,16 +46,16 @@ const isProtectedUsage = isAuthenticated.unstable_pipe(
     } catch (error) {
       console.error('Failed to consume credits:', error);
 
-      if (error instanceof Error) {
+      if (error instanceof Error && error.message.includes('rate limit')) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Failed to process request. Please try again.'
+          code: 'TOO_MANY_REQUESTS',
+          message: 'You have no credits remaining. Please upgrade your plan.'
         });
       }
 
       throw new TRPCError({
-        code: 'TOO_MANY_REQUESTS',
-        message: 'You have no credits remaining. Please upgrade your plan.'
+        code: 'BAD_REQUEST',
+        message: 'Failed to process request. Please try again.'
       });
     }
 

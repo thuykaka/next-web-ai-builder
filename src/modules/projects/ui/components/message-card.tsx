@@ -3,14 +3,13 @@ import { MessageRole, MessageType, Fragment } from '@/generated/prisma';
 import { ChevronRightIcon, Code2Icon } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 type MessageCardProps = {
   content: string;
   role: MessageRole;
   fragment: Fragment | null;
-  createdAt: string;
+  createdAt: Date;
   isActiveFragment: boolean;
   onFragmentClick: (fragment: Fragment) => void;
   type: MessageType;

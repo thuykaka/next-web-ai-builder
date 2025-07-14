@@ -1,5 +1,7 @@
 import { z } from 'zod';
+import { projectChannel } from '@/inngest/channels';
 import { inngest } from '@/inngest/client';
+import { getSubscriptionToken, Realtime } from '@inngest/realtime';
 import { TRPCError } from '@trpc/server';
 import { generateSlug } from 'random-word-slugs';
 import {
@@ -10,6 +12,22 @@ import {
 import prisma from '@/lib/db';
 
 export const projectsRouter = createTRPCRouter({
+  generateSubscriptionToken: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string().min(1, 'Project ID is required')
+      })
+    )
+    .mutation(async ({ input }) => {
+      const subscriptionToken = await getSubscriptionToken(inngest, {
+        channel: projectChannel(input.projectId),
+        topics: ['realtime']
+      });
+
+      console.log('subscriptionToken ->', subscriptionToken);
+
+      return subscriptionToken;
+    }),
   getMany: protectedProcedure.query(async ({ ctx }) => {
     const projects = await prisma.project.findMany({
       orderBy: {

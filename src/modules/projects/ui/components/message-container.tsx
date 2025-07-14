@@ -1,7 +1,8 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { Fragment } from '@/generated/prisma';
+import { Fragment, Message } from '@/generated/prisma';
 import { useTRPC } from '@/trpc/client';
+import { useInngest } from '@/modules/projects/ui/components/inngest-provider';
 import MessageCard from '@/modules/projects/ui/components/message-card';
 import MessageForm from '@/modules/projects/ui/components/message-form';
 import MessageLoading from '@/modules/projects/ui/components/message-loading';
@@ -22,18 +23,31 @@ export default function MessageContainer({
 
   const trpc = useTRPC();
 
+  const { latestData: realtimeData } = useInngest();
+
   const { data: messages, isPending } = useSuspenseQuery(
     trpc.messages.getMany.queryOptions(
       { projectId },
       {
-        // TODO: realtime updates
-        refetchInterval: 5000
+        staleTime: Infinity
       }
     )
   );
 
+  const allMessages = useMemo(() => {
+    const baseMessages = [...messages];
+    if (realtimeData && realtimeData.data) {
+      if (
+        !baseMessages.find((message) => message.id === realtimeData.data.id)
+      ) {
+        return [...baseMessages, realtimeData.data];
+      }
+    }
+    return baseMessages;
+  }, [messages, realtimeData]);
+
   useEffect(() => {
-    const lastAssitantMessage = messages.findLast(
+    const lastAssitantMessage = allMessages.findLast(
       (message) => message.role === 'ASSISTANT'
     );
     if (
@@ -43,24 +57,24 @@ export default function MessageContainer({
       setActiveFragment(lastAssitantMessage.fragment as any);
       lastAssitantMessageIdRef.current = lastAssitantMessage.id;
     }
-  }, [messages, setActiveFragment]);
+  }, [allMessages, setActiveFragment]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages.length]);
+  }, [allMessages.length]);
 
-  if (isPending || !messages) {
+  if (isPending || !allMessages) {
     return <div>Loading...</div>;
   }
 
-  const lastMessage = messages[messages.length - 1];
+  const lastMessage = allMessages[allMessages.length - 1];
   const isLastMessageFromUser = lastMessage?.role === 'USER';
 
   return (
     <div className='flex min-h-0 flex-1 flex-col'>
       <div className='min-h-0 flex-1 overflow-y-auto'>
         <div className='pt-2 pr-1'>
-          {messages.map((message) => (
+          {allMessages.map((message) => (
             <MessageCard
               key={message.id}
               content={message.content}

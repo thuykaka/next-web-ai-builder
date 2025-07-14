@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Suspense } from 'react';
-import { Fragment } from '@/generated/prisma';
+import { Fragment, Message } from '@/generated/prisma';
 import type { FileCollection } from '@/types/files';
 import { CodeIcon, CrownIcon, EyeIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/resizable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import FileExplore from '@/components/file-explore';
+import { InngestProvider } from '../components/inngest-provider';
 
 type ProjectDetailViewProps = {
   projectId: string;
@@ -35,20 +36,22 @@ export function ProjectDetailView({ projectId }: ProjectDetailViewProps) {
           minSize={20}
           className='flex min-h-0 flex-col'
         >
-          <Suspense fallback={<div>Loading project...</div>}>
-            <ErrorBoundary fallback={<div>Error loading project...</div>}>
-              <ProjectHeader projectId={projectId} />
-            </ErrorBoundary>
-          </Suspense>
-          <Suspense fallback={<div>Loading messages...</div>}>
-            <ErrorBoundary fallback={<div>Error loading messages...</div>}>
-              <MessageContainer
-                projectId={projectId}
-                activeFragment={activeFragment}
-                setActiveFragment={setActiveFragment}
-              />
-            </ErrorBoundary>
-          </Suspense>
+          <InngestProvider projectId={projectId}>
+            <Suspense fallback={<div>Loading project...</div>}>
+              <ErrorBoundary fallback={<div>Error loading project...</div>}>
+                <ProjectHeader projectId={projectId} />
+              </ErrorBoundary>
+            </Suspense>
+            <Suspense fallback={<div>Loading messages...</div>}>
+              <ErrorBoundary fallback={<div>Error loading messages...</div>}>
+                <MessageContainer
+                  projectId={projectId}
+                  activeFragment={activeFragment}
+                  setActiveFragment={setActiveFragment}
+                />
+              </ErrorBoundary>
+            </Suspense>
+          </InngestProvider>
         </ResizablePanel>
         <ResizableHandle className='hover:bg-primary/10 transition-colors' />
         <ResizablePanel
